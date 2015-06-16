@@ -1,17 +1,34 @@
-#compdef brew
+fancy_echo() {
+  local fmt="$1"; shift
 
-# Brew ZSH completion function
-# Drop this somewhere in your $fpath (like /usr/share/zsh/site-functions)
-# and rename it _brew
-#
-# altered from _fink
-
-_brew_all_formulae() {
-  formulae=(`brew search`)
+  # shellcheck disable=SC2059
+  printf "\n$fmt\n" "$@"
 }
 
-_brew_installed_formulae() {
-  installed_formulae=(`brew list`)
+brew_install_or_upgrade() {
+  if brew_is_installed "$1"; then
+    if brew_is_upgradable "$1"; then
+      fancy_echo "Upgrading %s ..." "$1"
+      brew upgrade "$@"
+    else
+      fancy_echo "Already using the latest version of %s. Skipping ..." "$1"
+    fi
+  else
+    fancy_echo "Installing %s ..." "$1"
+    brew install "$@"
+  fi
+}
+
+brew_is_installed() {
+  local name="$(brew_expand_alias "$1")"
+
+  brew list -1 | grep -Fqx "$name"
+}
+
+brew_is_upgradable() {
+  local name="$(brew_expand_alias "$1")"
+
+  ! brew outdated --quiet "$name" >/dev/null
 }
 
 local -a _1st_arguments
@@ -39,21 +56,24 @@ _bundle_arguments=(
   'check:check if all dependencies are installed in a Brewfile'
 )
 
-local expl
-local -a formula installed_formulae
+brew_tap() {
+  brew tap "$1" 2> /dev/null
+}
 
-_arguments \
-  '(-v --verbose)'{-v,--verbose}'[verbose]' \
-  '(--version)--version[version information]' \
-  '(--prefix)--prefix[where brew lives on this system]' \
-  '(--cache)--cache[brew cache]' \
-  '*:: :->subcmds' && return 0
+brew_expand_alias() {
+  brew info "$1" 2>/dev/null | head -1 | awk '{gsub(/:/, ""); print $1}'
+}
 
-if (( CURRENT == 1 )); then
-  _describe -t commands "brew subcommand" _1st_arguments
-  return
-fi
+brew_launchctl_restart() {
+  local name="$(brew_expand_alias "$1")"
+  local domain="homebrew.mxcl.$name"
+  local plist="$domain.plist"
 
+  fancy_echo "Restarting %s ..." "$1"
+  mkdir -p "$HOME/Library/LaunchAgents"
+  ln -sfv "/usr/local/opt/$name/$plist" "$HOME/Library/LaunchAgents"
+
+<<<<<<< HEAD
 case "$words[1]" in
   list)
     _arguments \
@@ -77,3 +97,10 @@ case "$words[1]" in
     _describe 'values' _bundle_arguments
   ;;
 esac
+=======
+  if launchctl list | grep -Fq "$domain"; then
+    launchctl unload "$HOME/Library/LaunchAgents/$plist" >/dev/null
+  fi
+  launchctl load "$HOME/Library/LaunchAgents/$plist" >/dev/null
+}
+>>>>>>> Funny tweaks for brew.
