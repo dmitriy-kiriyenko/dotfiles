@@ -21,7 +21,8 @@
         l = log --graph --abbrev-commit --date=relative
         la = !git l --all
         div = divergence
-        fa = fetch --all -p
+        f = fetch -p
+        fa = !git f --all
         x = !gitx
         promote = !$ZSH/bin/git-promote
         wtf     = !$ZSH/bin/git-wtf
