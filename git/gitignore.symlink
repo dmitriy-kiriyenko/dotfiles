@@ -1,3 +1,6 @@
 .DS_Store
 *~
 *.swp
+
+# Temporarily - don't forget to remove!
+package-lock.json

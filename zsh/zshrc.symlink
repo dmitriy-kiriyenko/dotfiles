@@ -52,5 +52,20 @@ zle -N down-line-or-beginning-search
 bindkey "^[[A" up-line-or-beginning-search # Up
 bindkey "^[[B" down-line-or-beginning-search # Down
 
+eval "$(rbenv init -)"
+
+function deis-run() { export NAMESPACE="$1" && PROCESS="$2" && shift && shift && kubectl exec -it --namespace $NAMESPACE "$(kubectl get pods --namespace $NAMESPACE -o name | grep $NAMESPACE-$PROCESS | cut -d '/' -f 2)" -- /runner/init "$@"; }
+
 ### Added by the Heroku Toolbelt
 export PATH="/usr/local/heroku/bin:$PATH"
+
+export BUNDLE_GITHUB__COM="dmitriy-kiriyenko:22ae61e42e6d7641c1357e56bfa25bb113ed23ef"
+
+export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
+
+# tabtab source for serverless package
+# uninstall by removing these lines or running `tabtab uninstall serverless`
+[[ -f /usr/local/lib/node_modules/serverless/node_modules/tabtab/.completions/serverless.zsh ]] && . /usr/local/lib/node_modules/serverless/node_modules/tabtab/.completions/serverless.zsh
+# tabtab source for sls package
+# uninstall by removing these lines or running `tabtab uninstall sls`
+[[ -f /usr/local/lib/node_modules/serverless/node_modules/tabtab/.completions/sls.zsh ]] && . /usr/local/lib/node_modules/serverless/node_modules/tabtab/.completions/sls.zsh
