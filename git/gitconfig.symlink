@@ -1,8 +1,13 @@
-# Local/private config goes in the include
-[include]
-        path = ~/.gitconfig.local
+# Sample gitconfig
+#
+
 [hub]
         protocol = https
+[user]
+        name = dmitriy-kiriyenko
+        email = dmitriy.kiriyenko@gmail.com
+[credential]
+        helper = osxkeychain
 [alias]
         co = checkout
         st = status -sb
@@ -16,7 +21,7 @@
         aa = add --all
         head = !git l -1
         h = !git head
-        r = !git --no-pager l -20
+        r = !git --no-pager l -16
         ra = !git r --all
         l = log --graph --abbrev-commit --date=relative
         la = !git l --all
@@ -52,11 +57,7 @@
         user = dmitriy-kiriyenko
 [help]
         autocorrect = 1
-[push]
-        # See `git help config` (search for push.default)
-        # for more information on different options of the below setting.
-        #
-        # Setting to git 2.0 default to suppress warning message
-        default = simple
-[credential]
-	helper = osxkeychain
+[init]
+	templatedir = ~/.git-templates
+[commit]
+	template = /Users/donal/.gitmessage
